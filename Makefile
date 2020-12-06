@@ -1,8 +1,8 @@
-INCLUDE := -I/usr/local/include
+INCLUDE := -I${GLFW_PATH} -I${ES_PATH}
 
-LINK := -lglfw -framework OpenGL
+LINK := -L${GLFW_LD_PATH} -lGLESv2 -lglfw3 -ldl -lpthread -lX11
 
-OPTION := -Wno-deprecated-declarations "-Wno-\#warnings"
+OPTION :=
 
 OBJECT := main.o obj.o texture.o shader.o control.o globe.o background.o panel.o
 

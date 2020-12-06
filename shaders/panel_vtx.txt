@@ -1,11 +1,11 @@
-#version 330 core
+#version 100
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPos;
-layout(location = 1) in vec2 vertexUV;
+attribute vec3 vertexPos;
+attribute vec2 vertexUV;
 
 // Output data ; will be interpolated for each fragment.
-out vec2 UV;
+varying vec2 UV;
 
 void main()
 {

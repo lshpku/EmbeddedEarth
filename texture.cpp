@@ -49,13 +49,19 @@ GLuint LoadBMP(const char *path)
         dataPos = 54;
 
     uint8_t *data = new uint8_t[imageSize];
-    fread(data, 1, width * height * 3, file);
+
+    for (int i = 0; i < imageSize; i += 3) {
+        // BGR -> RGB
+        data[i + 2] = fgetc(file);
+        data[i + 1] = fgetc(file);
+        data[i] = fgetc(file);
+    }
     fclose(file);
 
     GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, data);
     genMipMap();
 

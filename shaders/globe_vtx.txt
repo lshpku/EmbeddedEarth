@@ -1,17 +1,17 @@
-#version 330 core
+#version 100
 
 // inputs in model space
-layout(location = 0) in vec3 pos_mod;
-layout(location = 1) in vec2 uv_mod;
-layout(location = 2) in vec3 normal_mod;
+attribute vec3 pos_mod;
+attribute vec2 uv_mod;
+attribute vec3 normal_mod;
 
 uniform vec3 light_mod;
 
 // output in camera space
-out vec2 uv_cam;
-out vec3 normal_cam;
-out vec3 eye_cam;
-out vec3 light_cam;
+varying vec2 uv_cam;
+varying vec3 normal_cam;
+varying vec3 eye_cam;
+varying vec3 light_cam;
 
 // transform matrices
 uniform mat4 MVP;

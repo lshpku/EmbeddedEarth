@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <vector>
 #include "common.hpp"
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 using namespace std;
 using namespace glm;

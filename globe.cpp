@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <vector>
 #include "common.hpp"
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 using namespace std;
 using namespace glm;
@@ -34,6 +33,7 @@ void InitGlobe()
     vector<vec3> vertices;
     vector<vec2> uvs;
     vector<vec3> normals;
+
     LoadOBJ("resources/globe.obj", vertices, uvs, normals);
 
     vector<uint16_t> indices;
