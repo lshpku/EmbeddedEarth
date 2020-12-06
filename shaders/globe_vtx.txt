@@ -1,0 +1,32 @@
+#version 330 core
+
+// inputs in model space
+layout(location = 0) in vec3 pos_mod;
+layout(location = 1) in vec2 uv_mod;
+layout(location = 2) in vec3 normal_mod;
+
+uniform vec3 light_mod;
+
+// output in camera space
+out vec2 uv_cam;
+out vec3 normal_cam;
+out vec3 eye_cam;
+out vec3 light_cam;
+
+// transform matrices
+uniform mat4 MVP;
+uniform mat4 V;
+
+void main()
+{
+    gl_Position = MVP * vec4(pos_mod, 1); // in homogeneous space
+
+    vec3 pos_cam = (V * vec4(pos_mod, 1)).xyz;
+    eye_cam = vec3(0, 0, 0) - pos_cam;
+
+    light_cam = (V * vec4(light_mod, 0)).xyz;
+
+    normal_cam = (V * vec4(normal_mod, 0)).xyz;
+
+    uv_cam = uv_mod;
+}

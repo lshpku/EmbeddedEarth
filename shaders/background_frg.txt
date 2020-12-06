@@ -1,0 +1,15 @@
+#version 330 core
+
+// inputs in model space, already interpolated
+in vec2 uv_cam;
+
+// output color only
+out vec3 color;
+
+// texture sampler
+uniform sampler2D sampler;
+
+void main()
+{
+    color = texture(sampler, uv_cam).rgb;
+}
