@@ -5,8 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
+#include "common.hpp"
 using namespace std;
 
 static string readFile(const char *path)
@@ -25,17 +24,6 @@ static string readFile(const char *path)
     return code;
 }
 
-static void throwInfoLog(GLuint program, int infoLogLength)
-{
-    if (!infoLogLength) {
-        return;
-    }
-    char *infoLogBuffer = new char[infoLogLength];
-    glGetShaderInfoLog(program, infoLogLength, NULL, infoLogBuffer);
-    fprintf(stderr, "%s\n", infoLogBuffer);
-    exit(-1);
-}
-
 static void compileShader(const string &code, GLuint shaderID)
 {
     GLint result = GL_FALSE;
@@ -47,7 +35,16 @@ static void compileShader(const string &code, GLuint shaderID)
 
     glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
     glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
-    throwInfoLog(shaderID, infoLogLength);
+
+    // the debug code is from http://docs.gl/gl4/glCompileShader
+    if (result != GL_TRUE) {
+        GLsizei log_length = 0;
+        GLchar message[1024] = {};
+        glGetShaderInfoLog(shaderID, 1024, &log_length, message);
+        // Write the error to a log
+        fprintf(stderr, "%s\n", message);
+        exit(-1);
+    }
 }
 
 GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath)
@@ -72,11 +69,19 @@ GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath)
     glLinkProgram(programID);
 
     // Check the program
-    GLint result = GL_FALSE;
-    int infoLogLength;
-    glGetProgramiv(programID, GL_LINK_STATUS, &result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLength);
-    throwInfoLog(programID, infoLogLength);
+    // the debug code is from http://docs.gl/gl4/glCreateProgram
+    GLint program_linked = GL_FALSE;
+    glGetProgramiv(programID, GL_LINK_STATUS, &program_linked);
+    
+    if (program_linked != GL_TRUE)
+    {
+        GLsizei log_length = 0;
+        GLchar message[1024] = {};
+        glGetProgramInfoLog(programID, 1024, &log_length, message);
+        // Write the error to a log
+        fprintf(stderr, "%s\n", message);
+        exit(-1);
+    }
 
     glDetachShader(programID, vertexShaderID);
     glDetachShader(programID, fragmentShaderID);

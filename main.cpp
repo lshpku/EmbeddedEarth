@@ -1,10 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
-#include <OpenGL/gl3ext.h>
-#include <OpenGL/glu.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "common.hpp"
 using namespace std;
@@ -20,10 +15,9 @@ int main(int argc, char *argv[])
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     window = glfwCreateWindow(1024, 768, "Hello", NULL, NULL);
     if (!window) {
@@ -33,15 +27,13 @@ int main(int argc, char *argv[])
     }
     glfwMakeContextCurrent(window);
 
+    printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     // glEnable(GL_CULL_FACE);
 
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
 
     InitControl();
     InitGlobe();
@@ -61,8 +53,6 @@ int main(int argc, char *argv[])
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0);
-
-    glDeleteVertexArrays(1, &VertexArrayID);
 
     glfwTerminate();
 }

@@ -1,13 +1,16 @@
-#version 330 core
+#version 100
+
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
 
 // inputs in model space, already interpolated
-in vec2 uv_cam;
-in vec3 normal_cam;
-in vec3 eye_cam;
-in vec3 light_cam;
-
-// output color only
-out vec3 color;
+varying vec2 uv_cam;
+varying vec3 normal_cam;
+varying vec3 eye_cam;
+varying vec3 light_cam;
 
 // texture samplers
 uniform sampler2D sampler_day;
@@ -16,21 +19,20 @@ uniform sampler2D sampler_night;
 void main()
 {
     // Material properties
-    vec3 color_day = texture(sampler_day, uv_cam).rgb;
-    vec3 color_night = texture(sampler_night, uv_cam).rgb;
+    vec3 color_day = texture2D(sampler_day, uv_cam).rgb;
+    vec3 color_night = texture2D(sampler_night, uv_cam).rgb;
 
     // count diffuse part
     vec3 light_norm = normalize(light_cam);
     vec3 normal_norm = normalize(normal_cam);
-    float brightness = clamp(dot(light_norm, normal_norm), 0, 1);
-    vec3 color_diff = color_day * brightness +
-                      color_night * (1 - brightness);
+    float brightness = clamp(dot(light_norm, normal_norm), 0.0, 1.0);
+    vec3 color_diff = color_day * brightness + color_night * (1.0 - brightness);
 
     // count specular part
     vec3 eye_norm = normalize(eye_cam);
     vec3 light_refl = reflect(-light_norm, normal_norm);
-    float specular = clamp(dot(eye_norm, light_refl), 0, 1);
-    vec3 color_spec = vec3(0.2, 0.2, 0.2) * pow(specular, 5);
+    float specular = clamp(dot(eye_norm, light_refl), 0.0, 1.0);
+    vec3 color_spec = vec3(0.2, 0.2, 0.2) * pow(specular, 5.0);
 
-    color = color_diff + color_spec;
+    gl_FragColor = vec4(color_diff + color_spec, 1.0);
 }

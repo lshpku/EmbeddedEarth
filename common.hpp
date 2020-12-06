@@ -1,8 +1,10 @@
 #ifndef __COMMON_HPP__
 #define __COMMON_HPP__
 
+#define GLFW_INCLUDE_ES2
+#define GL_GLEXT_PROTOTYPES
+
 #include <vector>
-#include <OpenGL/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 

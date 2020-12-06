@@ -1,15 +1,18 @@
-#version 330 core
+#version 100
+
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
 
 // inputs in model space, already interpolated
-in vec2 uv_cam;
-
-// output color only
-out vec3 color;
+varying vec2 uv_cam;
 
 // texture sampler
 uniform sampler2D sampler;
 
 void main()
 {
-    color = texture(sampler, uv_cam).rgb;
+    gl_FragColor = vec4(texture2D(sampler, uv_cam).rgb, 1.0);
 }
