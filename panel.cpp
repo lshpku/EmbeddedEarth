@@ -5,8 +5,7 @@
 using namespace std;
 using namespace glm;
 
-static void drawSlidingBar(vec2, vec2, float, vector<vec3> &, vector<vec2> &,
-                           float, float);
+static void drawSlidingBar(SlidingBar &, int, vector<vec3> &, vector<vec2> &);
 template <class T>
 static void pushRectangle(vector<T> &, T, T, T, T);
 
@@ -33,10 +32,9 @@ void ShowPanel()
 {
     vector<vec3> vertices;
     vector<vec2> uvs;
-    drawSlidingBar(vec2(-0.5f, 0.8f), vec2(0.5f, 0.8f), 0.3f,
-                   vertices, uvs, -0.90f, -0.91f);
-    drawSlidingBar(vec2(-0.8f, -0.5f), vec2(-0.8f, 0.5), 0.97f,
-                   vertices, uvs, -0.92f, -0.93f);
+    for (int i = 0; i < bars.size();i++) {
+        drawSlidingBar(bars[i], i, vertices, uvs);
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vec3),
@@ -78,16 +76,15 @@ void DeletePanel()
     glDeleteTextures(1, &textureID);
 }
 
-static void drawSlidingBar(vec2 begin, vec2 end, float progress,
-                           vector<vec3> &vertices, vector<vec2> &uvs,
-                           float barZ, float buttonZ)
+static void drawSlidingBar(SlidingBar &bar, int z,
+                           vector<vec3> &vertices, vector<vec2> &uvs)
 {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     vec2 absolute = vec2(width / 2.0f, height / 2.0f);
     vec3 relative = vec3(2.0f / width, 2.0f / height, 1.0f);
 
-    vec2 delta = (end - begin) * absolute;
+    vec2 delta = (bar.end - bar.begin) * absolute;
     float len = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
     if (len == 0) {
         return;
@@ -98,6 +95,9 @@ static void drawSlidingBar(vec2 begin, vec2 end, float progress,
         cos_k, sin_k, 0.0f,
         -sin_k, cos_k, 0.0f,
         0.0f, 0.0f, 1.0f);
+
+    float barZ = -0.002f * z;
+    float buttonZ = barZ - 0.001f;
 
     /*  b0__b1____m0____e0__e1    5--4 1
      *  /    |     |     |   \      // |
@@ -112,7 +112,7 @@ static void drawSlidingBar(vec2 begin, vec2 end, float progress,
         vec3(0.0f, -barRadius, 0.0f),
         vec3(-barRadius, -barRadius, 0.0f)};
     for (int i = 0; i < 4; i++) {
-        b[i] = rotate * b[i] * relative + vec3(begin, barZ);
+        b[i] = rotate * b[i] * relative + vec3(bar.begin, barZ);
     }
     pushRectangle(vertices, b[0], b[1], b[2], b[3]);
     pushRectangle(uvs,
@@ -128,7 +128,7 @@ static void drawSlidingBar(vec2 begin, vec2 end, float progress,
         vec3(barRadius, -barRadius, 0.0f),
         vec3(0.0f, -barRadius, 0.0f)};
     for (int i = 0; i < 4; i++) {
-        e[i] = rotate * e[i] * relative + vec3(end, barZ);
+        e[i] = rotate * e[i] * relative + vec3(bar.end, barZ);
     }
     pushRectangle(vertices, e[0], e[1], e[2], e[3]);
     pushRectangle(uvs,
@@ -138,8 +138,8 @@ static void drawSlidingBar(vec2 begin, vec2 end, float progress,
                   vec2(0.875f, 0.75f));
 
     // filled
-    vec3 m0 = b[1] * (1 - progress) + e[0] * progress;
-    vec3 m1 = b[2] * (1 - progress) + e[3] * progress;
+    vec3 m0 = b[1] * (1 - bar.progress) + e[0] * bar.progress;
+    vec3 m1 = b[2] * (1 - bar.progress) + e[3] * bar.progress;
     pushRectangle(vertices, b[1], m0, m1, b[2]);
 
     pushRectangle(uvs,
@@ -157,7 +157,8 @@ static void drawSlidingBar(vec2 begin, vec2 end, float progress,
                   vec2(0.75f, 0.75f));
 
     // button
-    vec3 mid = vec3(begin * (1 - progress) + end * progress, buttonZ);
+    vec3 mid = vec3(bar.begin * (1 - bar.progress) + bar.end * bar.progress,
+                    buttonZ);
     vec3 u[] = {
         vec3(-buttonRadius, buttonRadius, 0.0f),
         vec3(buttonRadius, buttonRadius, 0.0f),

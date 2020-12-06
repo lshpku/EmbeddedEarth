@@ -15,6 +15,10 @@ uniform sampler2D sampler_night;
 
 void main()
 {
+    float refraction = 0.2;
+    vec3 spec_color = vec3(0.1, 0.1, 0.1);
+    float spec_factor = 5.0;
+
     // Material properties
     vec3 color_day = texture(sampler_day, uv_cam).rgb;
     vec3 color_night = texture(sampler_night, uv_cam).rgb;
@@ -22,7 +26,8 @@ void main()
     // count diffuse part
     vec3 light_norm = normalize(light_cam);
     vec3 normal_norm = normalize(normal_cam);
-    float brightness = clamp(dot(light_norm, normal_norm), 0, 1);
+    float brightness = dot(light_norm, normal_norm);
+    brightness = clamp((brightness + 1) * (refraction + 1) - 1, 0, 1);
     vec3 color_diff = color_day * brightness +
                       color_night * (1 - brightness);
 
@@ -30,7 +35,7 @@ void main()
     vec3 eye_norm = normalize(eye_cam);
     vec3 light_refl = reflect(-light_norm, normal_norm);
     float specular = clamp(dot(eye_norm, light_refl), 0, 1);
-    vec3 color_spec = vec3(0.2, 0.2, 0.2) * pow(specular, 5);
+    vec3 color_spec = spec_color * pow(specular, spec_factor);
 
     color = color_diff + color_spec;
 }

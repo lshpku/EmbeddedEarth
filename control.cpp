@@ -1,6 +1,8 @@
+#include <vector>
 #include <stdio.h>
 #include "common.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+using namespace std;
 using namespace glm;
 
 static void mouseButtonCallback(GLFWwindow *, int, int, int);
@@ -12,12 +14,16 @@ static void updateMatrix();
 mat4 viewMatrix;
 mat4 viewBkgMatrix;
 mat4 projectionMatrix;
+vector<SlidingBar> bars;
 
 // Mouse status
-static bool clicked = false;
+#define CLICK_NONE -1
+#define CLICK_GLOBE -2
+static int clicked = CLICK_NONE;
 static double lastX, lastY;
 static double lastTime;
-const static float shiftSpeed = 0.1f;
+const static float shiftSpeed = 0.03f;
+vec2 buttonOffset;
 
 // Spherical coordinate status
 static float horiAngle, vertAngle;
@@ -30,6 +36,7 @@ static int width, height;
 
 // Light status
 static float lightHoriAngle, lightVertAngle;
+vec3 lightDir;
 
 void InitControl()
 {
@@ -39,11 +46,20 @@ void InitControl()
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 
-    horiAngle = 0.0f;
+    horiAngle = 1.1f * pi<float>(); // asia centered
     vertAngle = 0.0f;
-    radius = 3.0f;
+    radius = 3.125f;
     fieldOfView = 60.0f;
     glfwGetWindowSize(window, &width, &height);
+    lightHoriAngle = pi<float>();
+    lightVertAngle = 0.0f; 
+
+    // light horizontal angle
+    bars.push_back(SlidingBar(vec2(-0.5, 0.8f), vec2(0.5f, 0.8f), 0.5f));
+    // light vertical angle
+    bars.push_back(SlidingBar(vec2(-0.8f, -0.5f), vec2(-0.8f, 0.5f), 0.5f));
+    // radius
+    bars.push_back(SlidingBar(vec2(0.8f, -0.3f), vec2(0.8f, 0.3f), 0.5f));
 
     updateMatrix();
 }
@@ -57,41 +73,92 @@ static void mouseButtonCallback(GLFWwindow *window, int button, int action, int 
         clicked = true;
         lastTime = glfwGetTime();
         glfwGetCursorPos(window, &lastX, &lastY);
+
+        // test button click
+        int i;
+        for (i = 0; i < bars.size(); i++) {
+            vec2 offset = vec2(1.0f, -1.0f);
+            vec2 screen = vec2(width, -height) / 2.0f;
+            vec2 begin = (bars[i].begin + offset) * screen;
+            vec2 end = (bars[i].end + offset) * screen;
+            vec2 mid = begin * (1 - bars[i].progress) + end * bars[i].progress;
+            if (distance(mid, vec2(lastX, lastY)) < BUTTON_RADIUS) {
+                buttonOffset = mid - vec2(lastX, lastY);
+                break;
+            }
+        }
+        if (i < bars.size()) {
+            clicked = i;
+        } else {
+            clicked = CLICK_GLOBE;
+        }
     } else {
-        clicked = false;
+        clicked = CLICK_NONE;
     }
 }
 
 static void cursorPositionCallback(GLFWwindow *window, double x, double y)
 {
-    if (!clicked) {
+    if (clicked == CLICK_NONE) {
         return;
     }
 
-    double curTime = glfwGetTime();
-    double deltaTime = curTime - lastTime;
-    double deltaX = x - lastX;
-    double deltaY = y - lastY;
+    // drag button
+    if (clicked != CLICK_GLOBE) {
+        vec2 offset = vec2(1.0f, -1.0f);
+        vec2 screen = vec2(width, -height) / 2.0f;
+        vec2 begin = (bars[clicked].begin + offset) * screen;
+        vec2 end = (bars[clicked].end + offset) * screen;
 
-    horiAngle -= deltaX * deltaTime * shiftSpeed;
-    vertAngle += deltaY * deltaTime * shiftSpeed;
-    if (vertAngle > maxVertAngle) {
-        vertAngle = maxVertAngle;
-    } else if (vertAngle < -maxVertAngle) {
-        vertAngle = -maxVertAngle;
+        vec2 o = vec2(x, y) + buttonOffset;
+        float be = distance(begin, end);
+        float ob = distance(o, begin) / be;
+        float oe = distance(o, end) / be;
+        float p = (ob * ob - oe * oe + 1) / 2;
+        p = clamp(p, 0.0f, 1.0f);
+        bars[clicked].progress = p;
+
+        switch (clicked) {
+        case 0:
+            lightHoriAngle = p * pi<float>() * 2.0f;
+            break;
+        case 1:
+            lightVertAngle = (p - 0.5) * radians(47.0f);
+            break;
+        case 2:
+            radius = 5.0f - p * 3.75f;
+            break;
+        }
+    }
+
+    // turn globe
+    else {
+        double curTime = glfwGetTime();
+        double deltaTime = curTime - lastTime;
+        double deltaX = x - lastX;
+        double deltaY = y - lastY;
+        float synSpeed = deltaTime * shiftSpeed * radius;
+
+        horiAngle -= deltaX * synSpeed;
+        vertAngle += deltaY * synSpeed;
+        if (vertAngle > maxVertAngle) {
+            vertAngle = maxVertAngle;
+        } else if (vertAngle < -maxVertAngle) {
+            vertAngle = -maxVertAngle;
+        }
+
+        lastTime = curTime;
+        lastX = x;
+        lastY = y;
     }
 
     updateMatrix();
-
-    lastTime = curTime;
-    lastX = x;
-    lastY = y;
 }
 
 static void framebufferSizeCallback(GLFWwindow *window, int w, int h)
 {
-    width = w;
-    height = h;
+    // do not use w & h! they are related to the resolution
+    glfwGetWindowSize(window, &width, &height);
     updateMatrix();
 }
 
@@ -111,6 +178,13 @@ static void updateMatrix()
         radius * cos(vertAngle) * cos(horiAngle));
 
     viewMatrix = lookAt(pos, origin, up);
-
     viewBkgMatrix = lookAt(origin, -pos, up);
+
+    lightDir = vec3(
+        cos(lightVertAngle) * sin(lightHoriAngle),
+        sin(lightVertAngle),
+        cos(lightVertAngle) * cos(lightHoriAngle));
 }
+
+SlidingBar::SlidingBar(vec2 _begin, vec2 _end, float _progress)
+    : begin(_begin), end(_end), progress(_progress) {}

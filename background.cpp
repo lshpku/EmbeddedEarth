@@ -7,11 +7,11 @@ using namespace std;
 using namespace glm;
 
 template <class T>
-static GLuint bindBuffer(GLenum, const vector<T> &);
+GLuint bindBuffer(GLenum, const vector<T> &);
 
 static GLuint shaderID;
 static GLuint mvpMatrixID, viewMatrixID;
-static Texture texture;
+static GLuint textureID, samplerID;
 static GLuint vertexBufferID, uvBufferID;
 static GLuint elementBufferID;
 static size_t elementCount;
@@ -23,8 +23,8 @@ void InitBackground()
     mvpMatrixID = glGetUniformLocation(shaderID, "MVP");
     viewMatrixID = glGetUniformLocation(shaderID, "V");
 
-    texture.texture = LoadBMP("resources/star_map.bmp");
-    texture.sampler = glGetUniformLocation(shaderID, "sampler");
+    textureID = LoadBMP("resources/star_map.bmp");
+    samplerID = glGetUniformLocation(shaderID, "sampler");
 
     vector<vec3> vertices;
     vector<vec2> uvs;
@@ -53,8 +53,8 @@ void ShowBackground()
     glUniformMatrix4fv(mvpMatrixID, 1, GL_FALSE, &mvp[0][0]);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.texture);
-    glUniform1i(texture.sampler, 0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glUniform1i(samplerID, 0);
 
     GL_ENABLE_VERTEX_ATRRIB_ARRAYS(2);
 
@@ -75,15 +75,5 @@ void DeleteBackground()
     glDeleteBuffers(1, &vertexBufferID);
     glDeleteBuffers(1, &uvBufferID);
     glDeleteProgram(shaderID);
-    glDeleteTextures(1, &texture.texture);
-}
-
-template <class T>
-static GLuint bindBuffer(GLenum type, const vector<T> &data)
-{
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(type, buffer);
-    glBufferData(type, data.size() * sizeof(T), &data[0], GL_STATIC_DRAW);
-    return buffer;
+    glDeleteTextures(1, &textureID);
 }

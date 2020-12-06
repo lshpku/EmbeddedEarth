@@ -7,11 +7,11 @@ using namespace std;
 using namespace glm;
 
 template <class T>
-static GLuint bindBuffer(GLenum, const vector<T> &);
+GLuint bindBuffer(GLenum, const vector<T> &);
 
 static GLuint shaderID;
 static GLuint mvpMatrixID, viewMatrixID;
-static Texture texDay, texNight;
+static GLuint texDayID, texNightID, sampDayID, sampNightID;
 static GLuint lightID;
 static GLuint vertexBufferID, uvBufferID, normalBufferID;
 static GLuint elementBufferID;
@@ -24,10 +24,10 @@ void InitGlobe()
     mvpMatrixID = glGetUniformLocation(shaderID, "MVP");
     viewMatrixID = glGetUniformLocation(shaderID, "V");
 
-    texDay.texture = LoadBMP("resources/globe_day.bmp");
-    texDay.sampler = glGetUniformLocation(shaderID, "sampler_day");
-    texNight.texture = LoadBMP("resources/globe_night.bmp");
-    texNight.sampler = glGetUniformLocation(shaderID, "sampler_night");
+    texDayID = LoadBMP("resources/globe_day.bmp");
+    sampDayID = glGetUniformLocation(shaderID, "sampler_day");
+    texNightID = LoadBMP("resources/globe_night.bmp");
+    sampNightID = glGetUniformLocation(shaderID, "sampler_night");
 
     lightID = glGetUniformLocation(shaderID, "light_mod");
 
@@ -56,14 +56,14 @@ void ShowGlobe()
     glUniformMatrix4fv(mvpMatrixID, 1, GL_FALSE, &mvp[0][0]);
     glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 
-    glUniform3f(lightID, 4.0f, 4.0f, 4.0f);
+    glUniform3f(lightID, lightDir[0], lightDir[1], lightDir[2]);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texDay.texture);
-    glUniform1i(texDay.sampler, 0);
+    glBindTexture(GL_TEXTURE_2D, texDayID);
+    glUniform1i(sampDayID, 0);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texNight.texture);
-    glUniform1i(texNight.sampler, 1);
+    glBindTexture(GL_TEXTURE_2D, texNightID);
+    glUniform1i(sampNightID, 1);
 
     GL_ENABLE_VERTEX_ATRRIB_ARRAYS(3);
 
@@ -88,12 +88,12 @@ void DeleteGlobe()
     glDeleteBuffers(1, &uvBufferID);
     glDeleteBuffers(1, &normalBufferID);
     glDeleteProgram(shaderID);
-    glDeleteTextures(1, &texDay.texture);
-    glDeleteTextures(1, &texNight.texture);
+    glDeleteTextures(1, &texDayID);
+    glDeleteTextures(1, &sampDayID);
 }
 
 template <class T>
-static GLuint bindBuffer(GLenum type, const vector<T> &data)
+GLuint bindBuffer(GLenum type, const vector<T> &data)
 {
     GLuint buffer;
     glGenBuffers(1, &buffer);

@@ -14,10 +14,23 @@ GLuint LoadBMP(const char *path);
 GLuint LoadTGA(const char *path);
 
 // control.cpp
+#define BAR_RADIUS 20.0f
+#define BUTTON_RADIUS 40.0f
+
+struct SlidingBar {
+    glm::vec2 begin;
+    glm::vec2 end;
+    float progress;
+    SlidingBar(glm::vec2 _begin, glm::vec2 _end, float _progress);
+};
+
+
 void InitControl();
 extern glm::mat4 viewMatrix;
 extern glm::mat4 viewBkgMatrix;
 extern glm::mat4 projectionMatrix;
+extern std::vector<SlidingBar> bars;
+extern glm::vec3 lightDir;
 
 // obj.cpp
 void LoadOBJ(const char *path,
@@ -47,6 +60,7 @@ void DeleteBackground();
 // main.cpp
 extern GLFWwindow *window;
 
+// for show
 #define GL_ENABLE_VERTEX_ATRRIB_ARRAYS(n) \
     for (int i = 0; i < n; i++)           \
     glEnableVertexAttribArray(i)
@@ -54,10 +68,5 @@ extern GLFWwindow *window;
 #define GL_DISABLE_VERTEX_ATRRIB_ARRAYS(n) \
     for (int i = 0; i < n; i++)            \
     glDisableVertexAttribArray(i)
-
-struct Texture {
-    GLuint texture;
-    GLuint sampler;
-};
 
 #endif
