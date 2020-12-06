@@ -16,6 +16,7 @@ GLuint LoadTGA(const char *path);
 // control.cpp
 void InitControl();
 extern glm::mat4 viewMatrix;
+extern glm::mat4 viewBkgMatrix;
 extern glm::mat4 projectionMatrix;
 
 // obj.cpp

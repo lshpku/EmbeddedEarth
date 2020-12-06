@@ -34,9 +34,9 @@ void ShowPanel()
     vector<vec3> vertices;
     vector<vec2> uvs;
     drawSlidingBar(vec2(-0.5f, 0.8f), vec2(0.5f, 0.8f), 0.3f,
-                   vertices, uvs, 0.0f, -0.1f);
+                   vertices, uvs, -0.90f, -0.91f);
     drawSlidingBar(vec2(-0.8f, -0.5f), vec2(-0.8f, 0.5), 0.97f,
-                   vertices, uvs, -0.2f, -0.3f);
+                   vertices, uvs, -0.92f, -0.93f);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vec3),

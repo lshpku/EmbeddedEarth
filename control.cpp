@@ -10,6 +10,7 @@ static void framebufferSizeCallback(GLFWwindow *, int, int);
 static void updateMatrix();
 
 mat4 viewMatrix;
+mat4 viewBkgMatrix;
 mat4 projectionMatrix;
 
 // Mouse status
@@ -40,8 +41,8 @@ void InitControl()
 
     horiAngle = 0.0f;
     vertAngle = 0.0f;
-    radius = 3.25f;
-    fieldOfView = 45.0f;
+    radius = 3.0f;
+    fieldOfView = 60.0f;
     glfwGetWindowSize(window, &width, &height);
 
     updateMatrix();
@@ -110,4 +111,6 @@ static void updateMatrix()
         radius * cos(vertAngle) * cos(horiAngle));
 
     viewMatrix = lookAt(pos, origin, up);
+
+    viewBkgMatrix = lookAt(origin, -pos, up);
 }
