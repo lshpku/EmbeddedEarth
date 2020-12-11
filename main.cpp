@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     InitControl();
     InitGlobe();
     InitPanel();
+    InitDigits();
     InitBackground();
 
     do {
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
         ShowBackground();
         ShowGlobe();
         ShowPanel();
+        ShowDigits();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

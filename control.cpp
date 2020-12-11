@@ -11,6 +11,9 @@ static void framebufferSizeCallback(GLFWwindow *, int, int);
 
 static void updateMatrix();
 
+inline static bool isInButton(float x, float y, float r);
+static void enterNum(int n);
+
 mat4 viewMatrix;
 mat4 viewBkgMatrix;
 mat4 projectionMatrix;
@@ -37,6 +40,17 @@ static int width, height;
 // Light status
 static float lightHoriAngle, lightVertAngle;
 vec3 lightDir;
+
+
+
+// Digit panel
+bool isDigitPanelShown;
+bool isDigitPanelActive;
+State digitSwitchState = State::ready;
+static State digitStates[10];
+uint8_t input[4];
+uint8_t inputIndex;
+static void simulateDate(int month, int day);
 
 void InitControl()
 {
@@ -66,19 +80,19 @@ void InitControl()
 
 static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
+    vec2 offset = vec2(1.0f, -1.0f);
+    vec2 screen = vec2(width, -height) / 2.0f;
+    glfwGetCursorPos(window, &lastX, &lastY);
     if (button != GLFW_MOUSE_BUTTON_LEFT) {
         return;
     }
     if (action == GLFW_PRESS) {
         clicked = true;
         lastTime = glfwGetTime();
-        glfwGetCursorPos(window, &lastX, &lastY);
-
+        
         // test button click
         int i;
-        for (i = 0; i < bars.size(); i++) {
-            vec2 offset = vec2(1.0f, -1.0f);
-            vec2 screen = vec2(width, -height) / 2.0f;
+        for (i = 0; i < bars.size(); i++) { 
             vec2 begin = (bars[i].begin + offset) * screen;
             vec2 end = (bars[i].end + offset) * screen;
             vec2 mid = begin * (1 - bars[i].progress) + end * bars[i].progress;
@@ -89,11 +103,41 @@ static void mouseButtonCallback(GLFWwindow *window, int button, int action, int 
         }
         if (i < bars.size()) {
             clicked = i;
+        } else if (isInButton(0.6f, -0.9f, 0.07f)) {            
+            if (digitSwitchState == State::ready)
+                digitSwitchState = State::holding;
+        } else if (isDigitPanelShown) {
+            int i;
+            for (i = 0; i < 10; i++) {
+                if (isInButton(buttons[i].x, buttons[i].y, dButtonRadius)
+                    && digitStates[i] == State::ready)
+                    digitStates[i] = State::holding;
+            }
+            if (i == 10)
+                clicked = CLICK_GLOBE;
         } else {
             clicked = CLICK_GLOBE;
         }
     } else {
         clicked = CLICK_NONE;
+        if (isInButton(0.6f, -0.9f, 0.07f)
+            && digitSwitchState == State::holding) {
+            digitSwitchState = State::busy;
+            isDigitPanelShown = !isDigitPanelShown;
+        } else if (digitSwitchState == State::holding) {
+            digitSwitchState = State::ready;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (isInButton(buttons[i].x, buttons[i].y, dButtonRadius)
+                && digitStates[i] == State::holding) {
+                enterNum(i);
+                isDigitPanelActive = true;
+                digitStates[i] = State::ready;
+            } else if (digitStates[i] == State::holding) {
+                digitStates[i] = State::ready;
+            }
+        }
     }
 }
 
@@ -117,6 +161,9 @@ static void cursorPositionCallback(GLFWwindow *window, double x, double y)
         float p = (ob * ob - oe * oe + 1) / 2;
         p = clamp(p, 0.0f, 1.0f);
         bars[clicked].progress = p;
+
+        if (clicked == 1)
+            isDigitPanelActive = false;
 
         switch (clicked) {
         case 0:
@@ -184,6 +231,61 @@ static void updateMatrix()
         cos(lightVertAngle) * sin(lightHoriAngle),
         sin(lightVertAngle),
         cos(lightVertAngle) * cos(lightHoriAngle));
+}
+
+inline static bool isInButton(float x, float y, float r) {
+    const vec2 offset = vec2(1.0f, -1.0f);
+    vec2 screen = vec2(width, -height) / 2.0f;
+    vec2 pos = (vec2(x, y) + offset) * screen;
+    float r_screen = r * height / 2;
+    return distance(pos, vec2(lastX, lastY)) < r_screen;
+}
+
+static void enterNum(int n) {
+    assert(inputIndex < 4);
+    assert(n < 10 && n >= 0);
+    input[inputIndex] = n;
+    inputIndex = (inputIndex + 1) % 4;
+
+    if (inputIndex == 0) {
+        int month = input[0] * 10 + input[1];
+        int day = input[2] * 10 + input[3];
+        simulateDate(month, day);
+    }
+}
+
+static void simulateDate(int month, int day) {
+    const int days[] = {
+        0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+
+    // Validate input.
+    if (month < 1 || month > 12 || day < 0 || day > days[month])
+        return;
+
+    if (month * 100 + day >= 622 && month * 100 + day <= 1222) {
+        // Between June 22 and Dec. 22 (both inclusive).
+        int dateDiff = days[6] - 22;
+        
+        for (int i = 7; i < month; i++)
+            dateDiff += days[i];
+
+        dateDiff += month > 6 ? day : 0;
+        float prog = (float)dateDiff / 183.0f;
+        lightVertAngle = radians(-23.5f * prog + 23.5f * (1.0f - prog));
+        updateMatrix();
+    } else {
+        // Between Dec. 22 and June 22 of the next year (both inclusive).
+        int dateDiff = days[12] - 22;
+        
+        for (int i = 1; i < month; i++)
+            dateDiff += days[i];
+
+        dateDiff += month < 12 ? day : 0;
+        float prog = (float)dateDiff / 182.0f;
+        lightVertAngle = radians(23.5f * prog - 23.5f * (1.0f - prog));
+        updateMatrix();
+    }
 }
 
 SlidingBar::SlidingBar(vec2 _begin, vec2 _end, float _progress)

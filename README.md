@@ -12,3 +12,5 @@ Showing the blue marble with OpenGL ES on Rasberry Pi.
 * [Khronos OpenGL ES Registry](https://www.khronos.org/registry/OpenGL/index_es.php)
 
 * [OpenGL Programming Concepts](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_pg_concepts/opengl_pg_concepts.html)
+
+* [Sean's Tool Box](https://github.com/nothings/stb) for the PNG loader (in `stb_image.h`)
