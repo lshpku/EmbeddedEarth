@@ -6,6 +6,10 @@ Showing the blue marble with OpenGL ES on Rasberry Pi.
 
 (Unpack to `./resources`)
 
+[北大网盘](https://github.com/nothings/stb)
+
+(Copy to `./resources`)
+
 ## References
 * [Desktop Emulator by ARM](https://developer.arm.com/tools-and-software/graphics-and-gaming/opengl-es-emulator)
 
