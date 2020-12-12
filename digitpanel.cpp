@@ -163,11 +163,11 @@ static void pushButton(vector<vec3> &vertices, vector<vec2> &uvs,
 
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     float r_x = r * windowHeight / windowWidth;
-    float z = (n == BUTTON_KBD ? -0.2f : -0.1f);
+    float z = -0.02f * n;
 
     vertices.push_back(vec3(x - r_x, y - r, z));
-    vertices.push_back(vec3(x + r_x, y - r, z));
-    vertices.push_back(vec3(x + r_x, y + r, z));
+    vertices.push_back(vec3(x + r_x, y - r, z + 0.01f));
+    vertices.push_back(vec3(x + r_x, y + r, z + 0.01f));
     vertices.push_back(vec3(x - r_x, y + r, z));
 
     if (n == BUTTON_KBD) {
@@ -202,11 +202,18 @@ static void pushChar(vector<vec3> &vertices, vector<vec2> &uvs,
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     const float r_x = r * windowHeight / windowWidth * x_zoomRatio;
     const float padding = (1.0f - x_zoomRatio) * 0.5f;
+    float z = -0.1f;
 
-    vertices.push_back(vec3(x - r_x, y - r, -0.1f));
-    vertices.push_back(vec3(x + r_x, y - r, -0.1f));
-    vertices.push_back(vec3(x + r_x, y + r, -0.1f));
-    vertices.push_back(vec3(x - r_x, y + r, -0.1f));
+    if (n == CHAR_MONTH)
+        z += 0.04f;
+    else if (n == CHAR_DAY)
+        z += 0.02f;
+        
+
+    vertices.push_back(vec3(x - r_x, y - r, z));
+    vertices.push_back(vec3(x + r_x, y - r, z + 0.01f));
+    vertices.push_back(vec3(x + r_x, y + r, z + 0.01f));
+    vertices.push_back(vec3(x - r_x, y + r, z));
 
     if (n == CHAR_MONTH) {
         uvs.push_back(vec2(0.0f + 0.1f * padding, 0.75f));
