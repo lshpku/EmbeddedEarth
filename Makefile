@@ -4,7 +4,7 @@ LINK := -L${GLFW_LD_PATH} -lGLESv2 -lglfw3 -ldl -lpthread -lX11
 
 OPTION :=
 
-OBJECT := main.o obj.o texture.o shader.o control.o globe.o background.o panel.o
+OBJECT := main.o obj.o texture.o shader.o control.o globe.o background.o panel.o digitpanel.o
 
 all: main
 

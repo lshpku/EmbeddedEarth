@@ -6,9 +6,15 @@ Showing the blue marble with OpenGL ES on Rasberry Pi.
 
 (Unpack to `./resources`)
 
+[北大网盘](https://github.com/nothings/stb)
+
+(Copy to `./resources`)
+
 ## References
 * [Desktop Emulator by ARM](https://developer.arm.com/tools-and-software/graphics-and-gaming/opengl-es-emulator)
 
 * [Khronos OpenGL ES Registry](https://www.khronos.org/registry/OpenGL/index_es.php)
 
 * [OpenGL Programming Concepts](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_pg_concepts/opengl_pg_concepts.html)
+
+* [Sean's Tool Box](https://github.com/nothings/stb) for the PNG loader (in `stb_image.h`)

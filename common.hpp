@@ -14,10 +14,18 @@ GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath);
 // texture.cpp
 GLuint LoadBMP(const char *path);
 GLuint LoadTGA(const char *path);
+GLuint LoadPNG(const char *path);
 
 // control.cpp
 #define BAR_RADIUS 20.0f
 #define BUTTON_RADIUS 40.0f
+
+// States of the button FSM
+enum class State {
+    ready,
+    holding,
+    busy
+};
 
 struct SlidingBar {
     glm::vec2 begin;
@@ -33,6 +41,12 @@ extern glm::mat4 viewBkgMatrix;
 extern glm::mat4 projectionMatrix;
 extern std::vector<SlidingBar> bars;
 extern glm::vec3 lightDir;
+
+extern bool isDigitPanelShown;
+extern bool isDigitPanelActive;
+extern uint8_t input[4];
+extern uint8_t inputIndex;
+extern State digitSwitchState;
 
 // obj.cpp
 void LoadOBJ(const char *path,
@@ -53,6 +67,13 @@ void DeleteGlobe();
 void InitPanel();
 void ShowPanel();
 void DeletePanel();
+
+// digitpanel.cpp
+void InitDigits();
+void ShowDigits();
+void DeleteDigits();
+extern const glm::vec2 buttons[];
+extern const float dButtonRadius;
 
 // backgound.cpp
 void InitBackground();

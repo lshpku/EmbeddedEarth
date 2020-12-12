@@ -3,6 +3,9 @@
 #include <string.h>
 #include "common.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 static void genMipMap();
 
 GLuint LoadBMP(const char *path)
@@ -125,6 +128,30 @@ GLuint LoadTGA(const char *path)
     genMipMap();
 
     delete[] buf;
+    return textureID;
+}
+
+GLuint LoadPNG(const char *path)
+{
+    printf("loading texture %s\n", path);
+
+    int width, height, comp;
+
+    stbi_set_flip_vertically_on_load(1);
+
+    auto buf = stbi_load(path, &width, &height, &comp, 0);
+    if (!buf) {
+        fprintf(stderr, "file not found: %s\n", path);
+        exit(-1);
+    }
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, buf);
+    genMipMap();
+
     return textureID;
 }
 
