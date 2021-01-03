@@ -1,60 +1,68 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include "common.hpp"
-using namespace std;
+#include <iostream>
+
+#include "background.h"
+#include "control_bar.h"
+#include "digit_panel.h"
+#include "globe.h"
+#include "graphics.h"
+
 using namespace glm;
 
-GLFWwindow *window;
+int main(int argc, char *argv[]) {
+  try {
+    Graphics::init("Embedded Earth", 1024, 768);
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return -1;
+  }
 
-int main(int argc, char *argv[])
-{
-    if (!glfwInit()) {
-        fprintf(stderr, "cannot init glfw\n");
-        exit(-1);
-    }
+  Globe globe;
+  Background background(&globe);
+  DigitPanel digitPanel(&globe);
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+  ControlBar bars[] = {
+      ControlBar(
+          &globe,
+          [](float p, Globe *globe) {
+            globe->lightHoriAngle = p * pi<float>() * 2.0f;
+          },
+          vec2(-0.5, 0.8f), vec2(0.5f, 0.8f), 0.5f),
+      ControlBar(
+          &globe,
+          [](float p, Globe *globe) {
+            globe->lightVertAngle = (p - 0.5) * radians(47.0f);
+          },
+          vec2(-0.8f, -0.5f), vec2(-0.8f, 0.5f), 0.5f, &digitPanel),
+      ControlBar(
+          &globe,
+          [](float p, Globe *globe) { globe->radius = 5.0f - p * 3.75f; },
+          vec2(0.8f, -0.3f), vec2(0.8f, 0.3f), 0.5f),
+  };
 
-    window = glfwCreateWindow(1024, 768, "Hello", NULL, NULL);
-    if (!window) {
-        fprintf(stderr, "cannot create glfw window\n");
-        glfwTerminate();
-        exit(-1);
-    }
-    glfwMakeContextCurrent(window);
+  Graphics::addClickable(&digitPanel);
 
-    printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+  Graphics::addDraggable(&bars[0]);
+  Graphics::addDraggable(&bars[1]);
+  Graphics::addDraggable(&bars[2]);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    // glEnable(GL_CULL_FACE);
+  Graphics::addDraggable(&globe);
+  Graphics::addLazyResizable(&globe);
 
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+  do {
+    Graphics::clear();
 
-    InitControl();
-    InitGlobe();
-    InitPanel();
-    InitDigits();
-    InitBackground();
+    background.show();
+    globe.show();
 
-    do {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    bars[0].show();
+    bars[1].show();
+    bars[2].show();
 
-        ShowBackground();
-        ShowGlobe();
-        ShowPanel();
-        ShowDigits();
+    digitPanel.show();
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+    Graphics::display();
+  }  // Check if the ESC key was pressed or the window was closed
+  while (!Graphics::shouldClose());
 
-    } // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0);
-
-    glfwTerminate();
+  Graphics::dispose();
 }

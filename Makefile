@@ -2,17 +2,19 @@ INCLUDE := -I${GLFW_PATH} -I${ES_PATH}
 
 LINK := -L${GLFW_LD_PATH} -lGLESv2 -lglfw3 -ldl -lpthread -lX11
 
-OPTION :=
+OPTION := -std=c++17 -Wall -Werror
 
-OBJECT := main.o obj.o texture.o shader.o control.o globe.o background.o panel.o digitpanel.o
+OBJECT := main.o graphics.o drawable.o globe.o background.o control_bar.o digit_panel.o
+
+CXX := clang++
 
 all: main
 
 main: $(OBJECT)
-	g++ -o main $(OBJECT) $(LINK)
+	$(CXX) -o main $(OBJECT) $(LINK)
 
 %.o: %.cpp
-	g++ -c -o $@ $< $(INCLUDE) $(OPTION)
+	$(CXX) -c -o $@ $< $(INCLUDE) $(OPTION)
 
 clean:
 	rm -f *.o main
