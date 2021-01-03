@@ -10,7 +10,7 @@ using namespace glm;
 
 int main(int argc, char *argv[]) {
   try {
-    Graphics::init("Embedded Earth", 1024, 768);
+    Graphics::init("Embedded Earth", 640, 480);
   } catch (const std::exception &e) {
     std::cerr << e.what() << std::endl;
     return -1;
