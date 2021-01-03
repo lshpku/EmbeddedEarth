@@ -1,6 +1,6 @@
-INCLUDE := -I/usr/local/include -I/usr/local/Cellar/glfw/3.3.2/include
+INCLUDE := -I/usr/local/include
 
-LINK := -L/usr/local/Cellar/glfw/3.3.2/lib -lglfw -framework OpenGL
+LINK := -lglfw -framework OpenGL
 
 OPTION := -std=c++17 -Wall -Werror
 
