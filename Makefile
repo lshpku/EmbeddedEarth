@@ -1,18 +1,20 @@
-INCLUDE := -I/usr/local/include
+INCLUDE := -I/usr/local/include -I/Users/garthlei/Downloads/glfw-3.3.2/include
 
-LINK := -lglfw -framework OpenGL
+LINK := -L/usr/local/Cellar/glfw/3.3.2/lib -lglfw -framework OpenGL
 
-OPTION := -Wno-deprecated-declarations "-Wno-\#warnings"
+OPTION := -std=c++17 -Wno-deprecated-declarations "-Wno-\#warnings"
 
-OBJECT := main.o obj.o texture.o shader.o control.o globe.o background.o panel.o digitpanel.o
+OBJECT := main.o graphics.o drawable.o globe.o background.o
+
+CXX := clang++
 
 all: main
 
 main: $(OBJECT)
-	g++ -o main $(OBJECT) $(LINK)
+	$(CXX) -o main $(OBJECT) $(LINK)
 
-%.o: %.cpp
-	g++ -c -o $@ $< $(INCLUDE) $(OPTION)
+%.o: %.cc
+	$(CXX) -c -o $@ $< $(INCLUDE) $(OPTION)
 
 clean:
 	rm -f *.o main
