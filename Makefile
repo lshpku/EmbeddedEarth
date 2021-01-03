@@ -2,7 +2,7 @@ INCLUDE := -I./include -I${GLFW_PATH}
 
 LINK := -L${GLFW_LD_PATH} -lglfw3 -ldl -lpthread -lX11
 
-OPTION := -std=c++17 -Wall -g
+OPTION := -std=c++17 -Wall
 
 OBJECT := main.o graphics.o drawable.o globe.o background.o control_bar.o digit_panel.o glad.o
 
