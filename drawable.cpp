@@ -11,7 +11,7 @@ void Drawable::indexVbo(std::vector<vec3> &vertices, std::vector<vec2> &uvs,
   std::vector<vec2> out_uvs;
   std::vector<vec3> out_normals;
 
-  for (int i = 0; i < vertices.size(); i++) {
+  for (size_t i = 0; i < vertices.size(); i++) {
     PackedVertex packed = {vertices[i], uvs[i], normals[i]};
     auto it = VertexToOutIndex.find(packed);
 
@@ -58,7 +58,7 @@ GLuint Drawable::loadImage(const char *path, GLenum format) {
   GLuint textureID;
   glGenTextures(1, &textureID);
   glBindTexture(GL_TEXTURE_2D, textureID);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format,
                GL_UNSIGNED_BYTE, buf);
   genMipMap();
 
@@ -111,7 +111,7 @@ void Drawable::loadObj(const char *path, std::vector<vec3> &out_vertices,
   }
 
   // convert indices to vectors
-  for (int i = 0; i < vertexIndices.size(); i++) {
+  for (size_t i = 0; i < vertexIndices.size(); i++) {
     uint32_t vertexIndex = vertexIndices[i];
     uint32_t uvIndex = uvIndices[i];
     uint32_t normalIndex = normalIndices[i];

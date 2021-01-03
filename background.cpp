@@ -17,7 +17,7 @@ Background::Background(Globe *globe): globe(globe) {
     std::vector<uint16_t> indices;
     std::printf("indexing\n");
     indexVbo(vertices, uvs, normals, indices);
-    for (int i = 0; i < vertices.size(); i++) {
+    for (size_t i = 0; i < vertices.size(); i++) {
         vertices[i] = vertices[i] * 16.0f;
     }
 

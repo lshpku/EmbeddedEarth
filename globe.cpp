@@ -32,17 +32,9 @@ Globe::Globe() {
   printf("indexing\n");
   indexVbo(vertices, uvs, normals, indices);
 
-<<<<<<< HEAD
-    vector<vec3> vertices;
-    vector<vec2> uvs;
-    vector<vec3> normals;
-
-    LoadOBJ("resources/globe.obj", vertices, uvs, normals);
-=======
   vertexBufferID = bindBuffer(GL_ARRAY_BUFFER, vertices);
   uvBufferID = bindBuffer(GL_ARRAY_BUFFER, uvs);
   normalBufferID = bindBuffer(GL_ARRAY_BUFFER, normals);
->>>>>>> gl
 
   elementCount = indices.size();
   elementBufferID = bindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);

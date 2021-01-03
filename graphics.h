@@ -1,9 +1,9 @@
 #ifndef _CXX_EMBEDDED_EARTH_GRAPHICS_H_
 #define _CXX_EMBEDDED_EARTH_GRAPHICS_H_
 
-#define GL_SILENCE_DEPRECATION
+#include "glad/glad.h"
 
-#define GLFW_INCLUDE_GLCOREARB
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <fstream>
@@ -26,7 +26,6 @@ struct Size {
 
 class Graphics {
   static GLFWwindow *window;
-  static GLuint vertexArrayId;
 
   static Drawable *clicked;
 
@@ -51,10 +50,7 @@ class Graphics {
   static State state;
   static void init(std::string name, int width, int height);
 
-  static void dispose() {
-    glDeleteVertexArrays(1, &vertexArrayId);
-    glfwTerminate();
-  }
+  static void dispose() { glfwTerminate(); }
 
   static Size getWindowSize() {
     Size s;

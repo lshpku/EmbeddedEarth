@@ -4,7 +4,6 @@
 #include "draggable.h"
 
 GLFWwindow *Graphics::window;
-GLuint Graphics::vertexArrayId;
 
 Drawable *Graphics::clicked;
 State Graphics::state;
@@ -59,12 +58,9 @@ void Graphics::init(std::string name, int width, int height) {
   if (!glfwInit()) throw std::runtime_error("cannot init glfw\n");
 
   glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-#ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
   window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
 
@@ -74,13 +70,14 @@ void Graphics::init(std::string name, int width, int height) {
 
   glfwMakeContextCurrent(window);
 
+  gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress);
+
+  printf("Version: %s\n", glGetString(GL_VERSION));
+
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-  glGenVertexArrays(1, &vertexArrayId);
-  glBindVertexArray(vertexArrayId);
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 

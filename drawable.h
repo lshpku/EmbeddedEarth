@@ -1,5 +1,7 @@
 #ifndef _CXX_EMBEDDED_EARTH_DRAWABLE_H_
 #define _CXX_EMBEDDED_EARTH_DRAWABLE_H_
+
+#include <cstring>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>

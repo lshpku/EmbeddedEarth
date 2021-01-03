@@ -1,6 +1,7 @@
 #ifndef _CXX_EMBEDDED_EARTH_CONTROL_BAR_H_
 #define _CXX_EMBEDDED_EARTH_CONTROL_BAR_H_
 
+#include <functional>
 #include <vector>
 
 #include "draggable.h"
