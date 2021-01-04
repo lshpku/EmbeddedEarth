@@ -40,7 +40,7 @@ void Background::show() {
     glBindTexture(GL_TEXTURE_2D, textureID);
     glUniform1i(samplerID, 0);
 
-    GL_ENABLE_VERTEX_ATTRIB_ARRAYS(2);
+    glEnableVertexAttribArrays(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -51,7 +51,7 @@ void Background::show() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferID);
     glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, NULL);
 
-    GL_DISABLE_VERTEX_ATTRIB_ARRAYS(2);
+    glDisableVertexAttribArrays(2);
 }
 
 Background::~Background() {

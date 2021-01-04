@@ -169,7 +169,7 @@ void DigitPanel::simulateDate(int month, int day) {
 
 DigitPanel::DigitPanel(Globe *globe)
     : isShown(false), isActive(false), globe(globe) {
-  shaderID =
+  programId =
       Graphics::loadShaders("shaders/panel_vtx.txt", "shaders/panel_frg.txt");
 
   textureID = loadImage("resources/digitpanel.png", GL_RGBA);
@@ -178,14 +178,14 @@ DigitPanel::DigitPanel(Globe *globe)
   glGenBuffers(1, &uvBufferID);
   glGenBuffers(1, &indexBufferID);
 
-  samplerID = glGetUniformLocation(shaderID, "sampler");
+  samplerID = glGetUniformLocation(programId, "sampler");
 }
 
 DigitPanel::~DigitPanel() {
   glDeleteBuffers(1, &vertexBufferID);
   glDeleteBuffers(1, &uvBufferID);
   glDeleteBuffers(1, &indexBufferID);
-  glDeleteProgram(shaderID);
+  glDeleteProgram(programId);
   glDeleteTextures(1, &textureID);
 }
 
@@ -239,13 +239,13 @@ void DigitPanel::show() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint16_t),
                &indices[0], GL_STATIC_DRAW);
 
-  glUseProgram(shaderID);
+  glUseProgram(programId);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureID);
   glUniform1i(samplerID, 0);
 
-  GL_ENABLE_VERTEX_ATTRIB_ARRAYS(2);
+  glEnableVertexAttribArrays(2);
 
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -261,5 +261,5 @@ void DigitPanel::show() {
 
   glDisable(GL_BLEND);
 
-  GL_DISABLE_VERTEX_ATTRIB_ARRAYS(2);
+  glEnableVertexAttribArrays(2);
 }

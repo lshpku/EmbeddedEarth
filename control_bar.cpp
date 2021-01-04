@@ -99,7 +99,7 @@ ControlBar::ControlBar(Globe *globe, std::function<void(float, Globe *)> func,
       bar(begin, end, progress),
       func(func),
       competitor(competitor) {
-  shaderID =
+  programId =
       Graphics::loadShaders("shaders/panel_vtx.txt", "shaders/panel_frg.txt");
 
   textureID = loadImage("resources/panel.tga", GL_RGBA);
@@ -107,13 +107,13 @@ ControlBar::ControlBar(Globe *globe, std::function<void(float, Globe *)> func,
   glGenBuffers(1, &vertexBufferID);
   glGenBuffers(1, &uvBufferID);
 
-  samplerID = glGetUniformLocation(shaderID, "sampler");
+  samplerID = glGetUniformLocation(programId, "sampler");
 }
 
 ControlBar::~ControlBar() {
   glDeleteBuffers(1, &vertexBufferID);
   glDeleteBuffers(1, &uvBufferID);
-  glDeleteProgram(shaderID);
+  glDeleteProgram(programId);
   glDeleteTextures(1, &textureID);
 }
 
@@ -170,13 +170,13 @@ void ControlBar::show() {
   glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(vec2), &uvs[0],
                GL_STATIC_DRAW);
 
-  glUseProgram(shaderID);
+  glUseProgram(programId);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureID);
   glUniform1i(samplerID, 0);
 
-  GL_ENABLE_VERTEX_ATTRIB_ARRAYS(2);
+  glEnableVertexAttribArrays(2);
 
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -192,5 +192,5 @@ void ControlBar::show() {
 
   glDisable(GL_BLEND);
 
-  GL_DISABLE_VERTEX_ATTRIB_ARRAYS(2);
+  glDisableVertexAttribArrays(2);
 }

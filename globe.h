@@ -45,10 +45,4 @@ class Globe : public Draggable {
   void show() override;
 };
 
-#define GL_ENABLE_VERTEX_ATTRIB_ARRAYS(n) \
-  for (int i = 0; i < n; i++) glEnableVertexAttribArray(i)
-
-#define GL_DISABLE_VERTEX_ATTRIB_ARRAYS(n) \
-  for (int i = 0; i < n; i++) glDisableVertexAttribArray(i)
-
 #endif
