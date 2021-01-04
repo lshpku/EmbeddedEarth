@@ -79,7 +79,7 @@ void Globe::show() {
   glBindTexture(GL_TEXTURE_2D, texNightID);
   glUniform1i(sampNightID, 1);
 
-  GL_ENABLE_VERTEX_ATTRIB_ARRAYS(3);
+  glEnableVertexAttribArrays(3);
 
   glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -93,7 +93,7 @@ void Globe::show() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferID);
   glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, NULL);
 
-  GL_DISABLE_VERTEX_ATTRIB_ARRAYS(3);
+  glDisableVertexAttribArrays(3);
 }
 
 void Globe::updateMatrix() {

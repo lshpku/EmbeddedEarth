@@ -17,7 +17,6 @@ struct SlidingBar {
 };
 
 class ControlBar : public Draggable {
-  GLuint shaderID;
   GLuint vertexBufferID, uvBufferID;
   GLuint textureID, samplerID;
   Globe *globe;

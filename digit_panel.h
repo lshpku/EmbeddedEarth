@@ -31,7 +31,6 @@ class DigitPanel : public Clickable {
   uint8_t input[4];
   uint8_t inputIndex;
 
-  GLuint shaderID;
   GLuint vertexBufferID, uvBufferID, indexBufferID;
   GLuint textureID, samplerID;
   bool isShown;

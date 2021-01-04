@@ -38,6 +38,14 @@ class Drawable {
   virtual bool isIn(double x, double y) { return true; }
   virtual void onCompete() {}
   virtual void onResize() {}
+
+  static void glEnableVertexAttribArrays(size_t n) {
+    for (int i = 0; i < n; i++) glEnableVertexAttribArray(i);
+  }
+
+  static void glDisableVertexAttribArrays(size_t n) {
+    for (int i = 0; i < n; i++) glDisableVertexAttribArray(i);
+  }
 };
 
 #endif
