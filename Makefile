@@ -1,4 +1,4 @@
-INCLUDE := -I./include -I${GLFW_PATH}
+INCLUDE := -I./include -I./glm -I${GLFW_PATH}
 
 LINK := -L${GLFW_LD_PATH} -lglfw3 -ldl -lpthread -lX11
 
