@@ -40,11 +40,11 @@ class Drawable {
   virtual void onResize() {}
 
   static void glEnableVertexAttribArrays(size_t n) {
-    for (int i = 0; i < n; i++) glEnableVertexAttribArray(i);
+    for (size_t i = 0; i < n; i++) glEnableVertexAttribArray(i);
   }
 
   static void glDisableVertexAttribArrays(size_t n) {
-    for (int i = 0; i < n; i++) glDisableVertexAttribArray(i);
+    for (size_t i = 0; i < n; i++) glDisableVertexAttribArray(i);
   }
 };
 
