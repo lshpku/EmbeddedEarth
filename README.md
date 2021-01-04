@@ -6,7 +6,7 @@ Showing the blue marble with OpenGL ES on Rasberry Pi.
 
 (Unpack to `./resources`)
 
-[北大网盘](https://github.com/nothings/stb)
+[北大网盘](https://disk.pku.edu.cn:443/link/9C1F7BB20872A79586E49BBDF8A28ED7)
 
 (Copy to `./resources`)
 
