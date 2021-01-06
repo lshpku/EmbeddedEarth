@@ -168,7 +168,7 @@ void DigitPanel::simulateDate(int month, int day) {
 }
 
 DigitPanel::DigitPanel(Globe *globe)
-    : isShown(false), isActive(false), globe(globe) {
+    : movingProg(0.0f), inputIndex(0), isShown(false), isActive(false), globe(globe) {
   programId =
       Graphics::loadShaders("shaders/panel_vtx.txt", "shaders/panel_frg.txt");
 
